@@ -24,5 +24,44 @@ public static class WorkerDbSeeder
                 await roleManager.CreateAsync(new RoleEntity(role));
             }
         }
+        // Seed default admin user
+        if (!dbContext.Users.Any())
+        {
+            var adminUser = new UserEntity
+            {
+                UserName = "admin@gmail.com",
+                Email = "admin@gmail.com",
+                FirstName = "Юхим",
+                LastName = "Манько"
+            };
+            var result = await userManager.CreateAsync(adminUser, "123456");
+            if (result.Succeeded)
+            {
+                // Assign the admin role to the user
+                await userManager.AddToRoleAsync(adminUser, Constants.Roles.Admin);
+            }
+            else
+            {
+                throw new Exception($"Failed to create admin user: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+            }
+
+            var user = new UserEntity
+            {
+                UserName = "user@ukr.net",
+                Email = "user@ukr.net",
+                FirstName = "Петро",
+                LastName = "Підкаблучник"
+            };
+            var userResult = await userManager.CreateAsync(user, "123456");
+            if (userResult.Succeeded)
+            {
+                // Assign the user role to the user
+                await userManager.AddToRoleAsync(user, Constants.Roles.User);
+            }
+            else
+            {
+                throw new Exception($"Failed to create user: {string.Join(", ", userResult.Errors.Select(e => e.Description))}");
+            }
+        }
     }
 }

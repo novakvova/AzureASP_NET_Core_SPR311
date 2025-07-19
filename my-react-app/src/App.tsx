@@ -5,7 +5,7 @@ function App() {
 
     const loginByGoogle = useGoogleLogin({
         onSuccess: tokenResponse => {
-            console.log("Get Google token",tokenResponse)
+            console.log("Get Google token",tokenResponse.access_token)
         },
     });
 

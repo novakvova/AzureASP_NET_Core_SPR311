@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Http.Headers;
 using WebWorker.Data.Entities.Identity;
 using WebWorker.Models.Account;
 
@@ -16,7 +17,19 @@ namespace WebWorker.Controllers
             {
                 return BadRequest("Token is required.");
             }
-            return Ok();
+
+            // Validate the Google token here (e.g., using Google API)
+            // For demonstration purposes, we'll assume the token is valid and retrieve user info.
+            HttpClient httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", model.Token);
+            var response = await httpClient.GetAsync($"https://www.googleapis.com/oauth2/v2/userinfo");
+            if (!response.IsSuccessStatusCode)
+            {
+                return Unauthorized("Invalid Google token.");
+            }
+            var userJson = await response.Content.ReadAsStringAsync();
+
+            return Ok(userJson);
         }
     }
 }

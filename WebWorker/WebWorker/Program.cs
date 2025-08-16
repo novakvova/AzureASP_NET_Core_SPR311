@@ -37,6 +37,17 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
+var dirName = "images";
+string path = Path.Combine(Directory.GetCurrentDirectory(), dirName);
+Directory.CreateDirectory(path);
+
+//Налаштування статичний файлів
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(path),
+    RequestPath = $"/{dirName}"
+});
+
 // Configure the HTTP request pipeline.
 
 app.UseAuthorization();

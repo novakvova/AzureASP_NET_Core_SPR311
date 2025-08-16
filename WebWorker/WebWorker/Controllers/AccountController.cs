@@ -56,5 +56,50 @@ namespace WebWorker.Controllers
                     token 
                 });
         }
+    
+    
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromForm] RegisterModel model)
+        {
+            if (string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(model.Password))
+            {
+                return BadRequest("Email and password are required.");
+            }
+            var user = await userManager.FindByEmailAsync(model.Email);
+            if(user == null)
+            {
+                return BadRequest("User with this email already exists.");
+            }
+            user = new UserEntity
+            {
+                UserName = model.Email,
+                Email = model.Email,
+                FirstName = model.FirstName,
+                LastName = model.LastName
+            };
+
+            if (model.ImageFile != null)
+            {
+                var imageName = $"{Guid.NewGuid()}{Path.GetExtension(model.ImageFile.FileName)}";
+                var path = Path.Combine(Directory.GetCurrentDirectory(), "images", imageName);
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    await model.ImageFile.CopyToAsync(stream);
+                }
+                user.Image = imageName;
+            }
+            var result = await userManager.CreateAsync(user, model.Password);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors.Select(e => e.Description));
+            }
+            // Optionally, assign a default role to the user
+            await userManager.AddToRoleAsync(user, Constants.Roles.User);
+            var token = await jwtTokenService.GenerateTokenAsync(user);
+            return Ok(new
+            {
+                token
+            });
+        }
     }
 }

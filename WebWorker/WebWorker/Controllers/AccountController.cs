@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
+using System.Text.Json;
 using WebWorker.Data.Entities.Identity;
 using WebWorker.Interfaces;
 using WebWorker.Models.Account;
@@ -31,7 +33,56 @@ namespace WebWorker.Controllers
             }
             var userJson = await response.Content.ReadAsStringAsync();
 
-            return Ok(userJson);
+            var googleUser = JsonSerializer.Deserialize<GoogleAccountModel>(userJson);
+
+            var existingUser = await userManager.FindByEmailAsync(googleUser!.Email);
+
+            //уже уже зареєструвався, але хоче зайти через Google
+            if (existingUser != null)
+            {
+                //Шукаємо чи він входив через Google
+                var userLoginGoogle = await userManager.FindByLoginAsync("Google", googleUser.GoogleId);
+
+                // Якщо не знайшли, то додаємо логін Google до існуючого користувача
+                if (userLoginGoogle == null)
+                {
+                    await userManager.AddLoginAsync(existingUser, new UserLoginInfo("Google", googleUser.GoogleId, "Google"));
+                }
+
+                var token = await jwtTokenService.GenerateTokenAsync(existingUser);
+                return Ok(
+                    new
+                    {
+                        token
+                    });
+            }
+            else
+            {
+                // Якщо користувач не знайдений, створюємо нового
+                var newUser = new UserEntity
+                {
+                    UserName = googleUser.Email,
+                    Email = googleUser.Email,
+                    FirstName = googleUser.FirstName,
+                    LastName = googleUser.LastName
+                };
+
+                var result = await userManager.CreateAsync(newUser);
+
+                result = await userManager.AddLoginAsync(newUser, new UserLoginInfo("Google", googleUser.GoogleId, "Google"));
+
+                await userManager.AddToRoleAsync(newUser, "User");
+                if (!result.Succeeded)
+                {
+                    return BadRequest(result.Errors.Select(e => e.Description));
+                }
+                var token = await jwtTokenService.GenerateTokenAsync(newUser);
+                return Ok(
+                    new
+                    {
+                        token
+                    });
+            }
         }
 
         [HttpPost("login")]
@@ -53,11 +104,11 @@ namespace WebWorker.Controllers
             return Ok(
                 new
                 {
-                    token 
+                    token
                 });
         }
-    
-    
+
+
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromForm] RegisterModel model)
         {
@@ -66,7 +117,7 @@ namespace WebWorker.Controllers
                 return BadRequest("Email and password are required.");
             }
             var user = await userManager.FindByEmailAsync(model.Email);
-            if(user != null)
+            if (user != null)
             {
                 return BadRequest("User with this email already exists.");
             }

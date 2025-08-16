@@ -66,7 +66,7 @@ namespace WebWorker.Controllers
                 return BadRequest("Email and password are required.");
             }
             var user = await userManager.FindByEmailAsync(model.Email);
-            if(user == null)
+            if(user != null)
             {
                 return BadRequest("User with this email already exists.");
             }

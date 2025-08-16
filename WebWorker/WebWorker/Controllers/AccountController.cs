@@ -2,13 +2,15 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http.Headers;
 using WebWorker.Data.Entities.Identity;
+using WebWorker.Interfaces;
 using WebWorker.Models.Account;
 
 namespace WebWorker.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccountController(UserManager<UserEntity> userManager) : ControllerBase
+    public class AccountController(UserManager<UserEntity> userManager,
+        IJwtTokenService jwtTokenService) : ControllerBase
     {
         [HttpPost("google-login")]
         public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequestModel model)
@@ -30,6 +32,29 @@ namespace WebWorker.Controllers
             var userJson = await response.Content.ReadAsStringAsync();
 
             return Ok(userJson);
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginModel model)
+        {
+            var user = await userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return Unauthorized("Invalid email or password.");
+            }
+            var result = await userManager.CheckPasswordAsync(user, model.Password);
+            if (!result)
+            {
+                return Unauthorized("Invalid email or password.");
+            }
+            //
+            var token = await jwtTokenService.GenerateTokenAsync(user);
+
+            return Ok(
+                new
+                {
+                    token 
+                });
         }
     }
 }

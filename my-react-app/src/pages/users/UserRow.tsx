@@ -1,8 +1,9 @@
 import type {IUserRowProps} from "./typs.ts";
 import * as React from "react";
+import EnvConfig from "../../config/env.ts";
 
 
-const UserRow: React.FC<IUserRowProps> = ({user, urlServer, initials}) => {
+const UserRow: React.FC<IUserRowProps> = ({user, initials}) => {
     return (
         <tr key={user.id} className="hover:bg-neutral-50/80 dark:hover:bg-white/5">
             <td className="px-5 py-4 text-sm text-neutral-600 dark:text-neutral-300 whitespace-nowrap">{user.id}</td>
@@ -14,7 +15,7 @@ const UserRow: React.FC<IUserRowProps> = ({user, urlServer, initials}) => {
 // If you store only file names, swap to your CDN/base path below
                             <img
                                 className="h-full w-full object-cover"
-                                src={user.image.startsWith("http") ? user.image : `${urlServer}images/${user.image}`}
+                                src={user.image.startsWith("http") ? user.image : `${EnvConfig.API_URL}/images/${user.image}`}
                                 alt={user.fullName}
                                 onError={(e) => {
 // graceful fallback to initials if image fails

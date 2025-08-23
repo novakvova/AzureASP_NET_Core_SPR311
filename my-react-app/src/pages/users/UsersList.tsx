@@ -3,11 +3,12 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 import type {IUserItem} from "./typs.ts";
 import UserRow from "./UserRow.tsx";
+import EnvConfig from "../../config/env.ts";
 
 const UsersList: React.FC = () => {
-    const urlServer = "http://localhost:5264/";
 
-    const urlGet = `${urlServer}api/users/list`;
+    // console.log("env url", EnvConfig.API_URL)
+    const urlGet = `${EnvConfig.API_URL}/api/users/list`;
 
     const [users, setUsers] = useState<IUserItem[]>([])
 
@@ -62,7 +63,7 @@ const UsersList: React.FC = () => {
                                 </thead>
                                 <tbody className="divide-y divide-black/5 dark:divide-white/10">
                                 {users.map((u) => (
-                                    <UserRow user={u} initials={initials} urlServer={urlServer} />
+                                    <UserRow user={u} initials={initials} />
                                 ))}
                                 </tbody>
 

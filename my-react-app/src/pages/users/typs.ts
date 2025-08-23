@@ -8,6 +8,5 @@ export interface IUserItem {
 
 export interface IUserRowProps {
     user: IUserItem;
-    urlServer: string;
     initials: (name: string) => string;
 }

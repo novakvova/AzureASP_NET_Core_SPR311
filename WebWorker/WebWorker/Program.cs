@@ -32,7 +32,19 @@ builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors();
+
 var app = builder.Build();
+
+//Console.WriteLine(builder.Configuration["ClientAppUrl"]);
+
+app.UseCors(opt =>
+{
+    opt.AllowAnyHeader()
+       .AllowAnyMethod()
+       .AllowCredentials()
+       .WithOrigins(builder.Configuration["ClientAppUrl"]!);
+});
 
 app.UseSwagger();
 app.UseSwaggerUI();

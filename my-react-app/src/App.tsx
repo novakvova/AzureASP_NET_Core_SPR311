@@ -1,20 +1,14 @@
 import './App.css'
-import {useGoogleLogin} from "@react-oauth/google";
+import * as React from "react";
+import AppRoutes from "./routes/AppRoutes.tsx";
 
-function App() {
+const App: React.FC = () => {
 
-    const loginByGoogle = useGoogleLogin({
-        onSuccess: tokenResponse => {
-            console.log("Get Google token",tokenResponse.access_token)
-        },
-    });
-
-  return (
-    <>
-      <h1 style={{textAlign: "center"}}>Насолоджуємося кодом</h1>
-        <button onClick={() => loginByGoogle()}>Sign in with Google 🚀</button>
-    </>
-  )
+    return (
+        <>
+            <AppRoutes />
+        </>
+    )
 }
 
 export default App

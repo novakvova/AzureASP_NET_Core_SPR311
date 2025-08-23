@@ -1,6 +1,7 @@
 import type {IUserRowProps} from "./typs.ts";
 import * as React from "react";
 import EnvConfig from "../../config/env.ts";
+import {Link} from "react-router-dom";
 
 
 const UserRow: React.FC<IUserRowProps> = ({user, initials}) => {
@@ -53,12 +54,12 @@ const UserRow: React.FC<IUserRowProps> = ({user, initials}) => {
 
             <td className="px-5 py-4">
                 <div className="flex justify-end gap-2">
-                    <button
+                    <Link to={`/user/${user.id}`}
                         className="px-3 py-1.5 rounded-xl text-xs font-medium bg-neutral-900 text-white hover:opacity-90 dark:bg-white dark:text-neutral-900"
-                        onClick={() => alert(`Edit user ${user.id}`)}
+                        // onClick={() => alert(`Edit user ${user.id}`)}
                     >
                         Редагувати
-                    </button>
+                    </Link>
                     <button
                         className="px-3 py-1.5 rounded-xl text-xs font-medium bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700"
                         onClick={() => alert(`Delete user ${user.id}`)}

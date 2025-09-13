@@ -1,0 +1,36 @@
+version: "3.9"
+networks:
+  myAppNetwork:
+    driver: bridge
+
+services:
+  db:
+    container_name: pg-container
+    image: postgres:17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Pg#2025!Db$Secure7
+      POSTGRES_DB: spr311azure
+    volumes:
+      - /data/spr311azure/postgresql/data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - myAppNetwork
+    restart: unless-stopped
+  app:
+    container_name: atb-asp-api-container
+    image: novakvova/azure-spr311-api
+    ports:
+      - "4802:8080"  
+    networks:
+      - myAppNetwork
+    volumes:
+      - /data/spr311azure/images:/app/images
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 5
+    environment:
+        ConnectionStrings__DefaultConnection: "Host=db;Database=spr311azure;Username=postgres;Password=Pg#2025!Db$Secure7"
+

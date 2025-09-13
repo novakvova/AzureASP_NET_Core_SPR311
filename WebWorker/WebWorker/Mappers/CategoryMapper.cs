@@ -10,5 +10,9 @@ public class CategoryMapper : Profile
     {
         CreateMap<CategoryCreateModel, CategoryEntity>()
             .ForMember(x=>x.Image, opt=>opt.Ignore());
+
+        CreateMap<CategoryEntity, CategoryItemModel>()
+            .ForMember(x=>x.ImagePath, 
+                opt=>opt.MapFrom(x=>$"/images/400_{x.Image}"));
     }
 }

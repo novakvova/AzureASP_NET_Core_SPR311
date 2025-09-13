@@ -18,5 +18,11 @@ namespace WebWorker.Controllers
             return Ok(new { categoryId });
         }
 
+        [HttpGet("list")]
+        public async Task<IActionResult> GetAll()
+        {
+            var categories = await categoryService.GetAllAsync();
+            return Ok(categories);
+        }
     }
 }

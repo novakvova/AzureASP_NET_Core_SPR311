@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using Microsoft.EntityFrameworkCore;
 using WebWorker.Data;
 using WebWorker.Data.Entities;
 using WebWorker.Interfaces;
@@ -20,5 +22,14 @@ public class CategoryService(IMapper mapper,
         context.Categories.Add(entity);
         await context.SaveChangesAsync();
         return entity.Id;
+    }
+
+    public async Task<List<CategoryItemModel>> GetAllAsync()
+    {
+        var items = await context.Categories
+            .ProjectTo<CategoryItemModel>(mapper.ConfigurationProvider)
+            .ToListAsync();
+        //AsQurable
+        return items;
     }
 }

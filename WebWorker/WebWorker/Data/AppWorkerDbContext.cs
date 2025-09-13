@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using WebWorker.Data.Entities;
 using WebWorker.Data.Entities.Identity;
 
 namespace WebWorker.Data;
@@ -9,6 +10,8 @@ public class AppWorkerDbContext : IdentityDbContext<UserEntity, RoleEntity, long
     IdentityUserClaim<long>, UserRoleEntity, IdentityUserLogin<long>,
     IdentityRoleClaim<long>, IdentityUserToken<long>>
 {
+    public DbSet<CategoryEntity> Categories { get; set; }
+
     public AppWorkerDbContext(DbContextOptions<AppWorkerDbContext> options) : base(options)
     {
     }

@@ -30,6 +30,8 @@ builder.Services.AddIdentity<UserEntity, RoleEntity>(opt =>
 
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddCors();

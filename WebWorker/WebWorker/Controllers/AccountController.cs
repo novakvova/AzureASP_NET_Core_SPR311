@@ -12,7 +12,8 @@ namespace WebWorker.Controllers
     [Route("api/[controller]")]
     [ApiController]
     public class AccountController(UserManager<UserEntity> userManager,
-        IJwtTokenService jwtTokenService) : ControllerBase
+        IJwtTokenService jwtTokenService,
+        IConfiguration configuration) : ControllerBase
     {
         [HttpPost("google-login")]
         public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequestModel model)
@@ -131,8 +132,9 @@ namespace WebWorker.Controllers
 
             if (model.ImageFile != null)
             {
+                var imagesDir = configuration["ImagesDir"] ?? "images";
                 var imageName = $"{Guid.NewGuid()}{Path.GetExtension(model.ImageFile.FileName)}";
-                var path = Path.Combine(Directory.GetCurrentDirectory(), "images", imageName);
+                var path = Path.Combine(Directory.GetCurrentDirectory(), imagesDir, imageName);
                 using (var stream = new FileStream(path, FileMode.Create))
                 {
                     await model.ImageFile.CopyToAsync(stream);

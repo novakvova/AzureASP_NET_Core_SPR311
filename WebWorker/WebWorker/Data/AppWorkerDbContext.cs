@@ -12,6 +12,8 @@ public class AppWorkerDbContext : IdentityDbContext<UserEntity, RoleEntity, long
 {
     public DbSet<CategoryEntity> Categories { get; set; }
 
+    public DbSet<IngredientEntity> Ingredients { get; set; }
+
     public AppWorkerDbContext(DbContextOptions<AppWorkerDbContext> options) : base(options)
     {
     }

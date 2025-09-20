@@ -12,4 +12,6 @@ public class CategoryEntity : BaseEntity<long>
 
     [StringLength(250)]
     public string? Image { get; set; } = null;
+
+    public ICollection<ProductEntity>? Products { get; set; }
 }

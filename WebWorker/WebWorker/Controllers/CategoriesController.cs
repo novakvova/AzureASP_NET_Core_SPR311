@@ -24,5 +24,12 @@ namespace WebWorker.Controllers
             var categories = await categoryService.GetAllAsync();
             return Ok(categories);
         }
+
+        [HttpDelete("delete/{id:long}")]
+        public async Task<IActionResult> Delete(long id)
+        {
+            await categoryService.DeleteAsync(id);
+            return NoContent();
+        }
     }
 }

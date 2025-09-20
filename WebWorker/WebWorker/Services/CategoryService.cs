@@ -24,9 +24,20 @@ public class CategoryService(IMapper mapper,
         return entity.Id;
     }
 
+    public async Task DeleteAsync(long id)
+    {
+        var entity = await context.Categories.FindAsync(id);
+        if (entity != null)
+        {
+            entity.IsDeleted = true;
+            await context.SaveChangesAsync();
+        }
+    }
+
     public async Task<List<CategoryItemModel>> GetAllAsync()
     {
         var items = await context.Categories
+            .Where(c => !c.IsDeleted)
             .ProjectTo<CategoryItemModel>(mapper.ConfigurationProvider)
             .ToListAsync();
         //AsQurable

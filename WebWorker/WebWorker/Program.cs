@@ -30,7 +30,7 @@ builder.Services.AddIdentity<UserEntity, RoleEntity>(opt =>
 
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 
-builder.Services.AddScoped<ImageService, ImageService>();
+builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

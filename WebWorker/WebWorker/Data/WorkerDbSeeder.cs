@@ -1,6 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
+using WebWorker.Data.Entities;
 using WebWorker.Data.Entities.Identity;
+using WebWorker.Interfaces;
+using WebWorker.Models.Seeder;
 
 namespace WebWorker.Data;
 
@@ -12,6 +17,7 @@ public static class WorkerDbSeeder
         var dbContext = scope.ServiceProvider.GetRequiredService<AppWorkerDbContext>();
         var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<RoleEntity>>();
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<UserEntity>>();
+        var mapper = scope.ServiceProvider.GetRequiredService<IMapper>();
 
         // Ensure the database is created and migrations are applied
         await dbContext.Database.MigrateAsync();
@@ -63,5 +69,40 @@ public static class WorkerDbSeeder
                 throw new Exception($"Failed to create user: {string.Join(", ", userResult.Errors.Select(e => e.Description))}");
             }
         }
+
+        if (!dbContext.Ingredients.Any())
+        {
+            var imageService = scope.ServiceProvider.GetRequiredService<IImageService>();
+            var jsonFile = Path.Combine(Directory.GetCurrentDirectory(), "Helpers", "JsonData", "Ingredients.json");
+            if (File.Exists(jsonFile))
+            {
+                var jsonData = await File.ReadAllTextAsync(jsonFile);
+                try
+                {
+                    var items = JsonSerializer.Deserialize<List<SeederIngredientModel>>(jsonData);
+                    var entityItems = mapper.Map<List<IngredientEntity>>(items);
+                    foreach (var entity in entityItems)
+                    {
+                        entity.Image =
+                            await imageService.SaveImageFromUrlAsync(entity.Image);
+                    }
+
+                    await dbContext.Ingredients.AddRangeAsync(entityItems);
+                    await dbContext.SaveChangesAsync();
+
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error Json Parse Data {0}", ex.Message);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Not Found File Ingredients.json");
+            }
+        }
+
     }
+
+
 }

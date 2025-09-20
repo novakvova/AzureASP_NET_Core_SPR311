@@ -10,7 +10,7 @@ namespace WebWorker.Services;
 
 public class CategoryService(IMapper mapper, 
     AppWorkerDbContext context,
-    ImageService imageService) : ICategoryService
+    IImageService imageService) : ICategoryService
 {
     public async Task<long> CreateAsync(CategoryCreateModel model)
     {

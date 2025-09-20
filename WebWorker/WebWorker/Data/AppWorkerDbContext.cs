@@ -14,6 +14,8 @@ public class AppWorkerDbContext : IdentityDbContext<UserEntity, RoleEntity, long
 
     public DbSet<IngredientEntity> Ingredients { get; set; }
 
+    public DbSet<ProductIngredientEntity> ProductIngredients { get; set; }
+
     public AppWorkerDbContext(DbContextOptions<AppWorkerDbContext> options) : base(options)
     {
     }
@@ -34,5 +36,8 @@ public class AppWorkerDbContext : IdentityDbContext<UserEntity, RoleEntity, long
                 .HasForeignKey(u => u.UserId)
                 .IsRequired();
         });
+
+        builder.Entity<ProductIngredientEntity>()
+            .HasKey(pi => new { pi.ProductId, pi.IngredientId });
     }
 }
